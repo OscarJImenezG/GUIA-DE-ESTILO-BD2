@@ -786,7 +786,7 @@ DELIMITER ;
 
 
 -- VERIFICAMOS CUANTO DEBEN LOS ALUMNOS:
--- SELECT * FROM ALUMNOS;
+-- SELECT * FROM alumnos;
 
 -- Podemos generamos el pago de un alumno con deuda:
 -- CALL sp_insertar_pago (2, 600.00);
@@ -797,7 +797,7 @@ DELIMITER ;
 -- El ID de pago es el 1 y el monto fue 600.00
 
 -- RECTIFICAMOS QUE SE EFECTUO LA DIFERENCIA EN LA DEUDA DEL ALUMNO
--- SELECT * FROM ALUMNOS WHERE id = 2;
+-- SELECT * FROM alumnos WHERE id = 2;
 
 
 -- Hacemos un UPDATE manual para despertar al trigger:
