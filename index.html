@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de estilo SQL</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <aside>
+            <h2>BD II Procedimientos Almacenados y Triggers</h2>
+            <div class="nav-header">Teoría</div>
+            <ul class="nav-links">
+                <li><a href="#objetivo">Objetivo</a></li>
+                <li><a href="#material">Descargar Material</a></li>
+                <li><a href="#nombres">Nomenclatura de Nombres</a></li>
+                <li><a href="#estructura">Estructura y Estilo</a></li>
+                <li><a href="#seguridad">Seguridad</a></li>
+                <li><a href="#errores">Gestión de Errores</a></li>
+                <li><a href="#triggers">Triggers</a></li>
+                <li><a href="#ejemplos">Ejemplos</a></li>
+            </ul>
+            <div class="nav-header" style="margin-top:2rem">Práctica</div>
+            <ul class="nav-links">
+                <li><a href="#laboratorio" class="nav-lab">★ LABORATORIO SQL</a></li>
+            </ul>
+        </aside>
+
+        <main>
+            <header>
+                <h1>Estándares profesionales para Procedimientos y Triggers</h1>
+            </header>
+
+            <section id="objetivo">
+                <h2>Objetivo</h2>
+                <p>Escribir código que no solo funcione, sino que sea profesional. Un buen SP debe ser:</p>
+                <ul>
+                    <li><strong>Legible:</strong> Uso correcto de indentación y nombres.</li>
+                    <li><strong>Robusto:</strong> Manejo de errores <code>SQLEXCEPTION</code>.</li>
+                    <li><strong>Seguro:</strong> Sin concatenación de cadenas (SQL Injection).</li>
+                </ul>
+            </section>
+
+            <section id="material">
+                <h2>Material de Práctica</h2>
+                <p>Para seguir este taller, hemos preparado un esquema de base de datos. Contiene las tablas
+                    necesarias (<code>alumnos</code>, <code>pagos</code>, <code>productos</code>, etc.) pero
+                    <strong>sin los procedimientos ni triggers</strong>.
+                </p>
+                <p>Descarga el archivo, impórtalo en tu gestor (Workbench/DBeaver) y luego copia/pega los códigos de
+                    ejemplos para practicar.</p>
+
+                <div class="download-box"
+                    style="text-align: center; padding: 20px; background: #222; border-radius: 8px; margin-top: 20px;">
+                    <button onclick="downloadSQL()" class="btn-download">
+                        📥 Descargar guia_estilo.sql
+                    </button>
+                    <p style="font-size: 0.9em; color: #888; margin-top: 10px;">
+                        Al dar clic se descargará automáticamente.
+                    </p>
+                </div>
+            </section>
+
+            <section id="nombres">
+                <h2>Convenciones de Nombres</h2>
+                <p>Evita la ambigüedad. El uso correcto de prefijos permite identificar el tipo de objeto y su función
+                    inmediatamente.</p>
+
+                <div class="table-responsive">
+                    <table class="naming-table">
+                        <thead>
+                            <tr>
+                                <th>Objeto</th>
+                                <th>Prefijo y Formato</th>
+                                <th>Ejemplo Correcto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Procedimiento Almacenado</strong></td>
+                                <td><code>sp_accion_objeto</code></td>
+                                <td>sp_insertar_alumno, sp_reporte_pagos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Trigger</strong></td>
+                                <td><code>tr_accion_tabla_tiempo</code></td>
+                                <td>tr_insert_alumnos_before, tr_update_stock_after</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Variable Local</strong></td>
+                                <td><code>v_descripcion</code></td>
+                                <td>v_nombre_estudiante, v_total_calculado</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cursor</strong></td>
+                                <td><code>cur_descripcion</code></td>
+                                <td>cur_clientes_activos</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Parámetro de Entrada</strong></td>
+                                <td><code>p_descripcion</code></td>
+                                <td>p_id_alumno, p_fecha_inicio</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="comparison">
+                    <div class="comp-box bad">
+                        <span class="badge b-bad">Evitar</span>
+                        <p>Nombres genéricos o confusos:</p>
+                        <code>proc1()</code><br>
+                        <code>actualizar_tabla()</code><br>
+                        <code>trigger_update</code>
+                    </div>
+                    <div class="comp-box good">
+                        <span class="badge b-good">Recomendado</span>
+                        <p>Estructura: <code>prefijo_accion_objeto</code></p>
+                        <code>sp_insertar_alumno</code><br>
+                        <code>sp_calcular_promedio</code><br>
+                        <code>tr_pagos_after_update</code>
+                    </div>
+                </div>
+            </section>
+
+            <section id="estructura">
+                <h2>Estructura Recomendada para Procedimientos Almacenados</h2>
+                <p>Para garantizar la legibilidad y reducir la carga cognitiva al leer código ajeno.</p>
+
+                <h3>Reglas de Formato: </h3>
+                <ul>
+                    <li><strong>Palabras Clave:</strong> Siempre en <strong>MAYÚSCULAS (<span
+                                class="string">SELECT</span>, <span class="string">INSERT</span>, <span
+                                class="string">BEGIN</span>, <span class="string">END</span>).</strong></li>
+                    <li><strong>Indentación:</strong> Usar 2 o 4 espacios (configurar editor para usar espacios, no
+                        tabs).</li>
+                    <li><strong>Saltos de Línea:</strong> Cada instrucción o cláusula importante <strong>(<span
+                                class="string">WHERE</span>, <span class="string">JOIN</span>)</strong> en una línea
+                        nueva.</li>
+                </ul>
+                <h3>Estructura de un Procedimiento</h3>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                    <pre><code><span class="keyword">DELIMITER</span> $$
+<span class="keyword">CREATE PROCEDURE</span> sp_actualizar_saldo_usuario (
+    <span class="keyword">IN</span> p_saldo <span class="datatype">DECIMAL(10,2)</span>, 
+    <span class="keyword">IN</span> p_usuario <span class="datatype">VARCHAR(100)</span>
+)
+<span class="keyword">BEGIN</span>
+    <span class="comment">-- Encabezado de Documentación</span>
+    <span class="comment">-- Autor: GOYO | Fecha: 2025-10-23 | Propósito: Inserta y actualiza saldo</span>
+
+    <span class="comment">-- Declaración de Variables</span>
+    <span class="keyword">DECLARE</span> v_filas_afectadas <span class="keyword">INT DEFAULT</span> 0;
+    <span class="keyword">DECLARE</span> v_error_msg <span class="datatype">VARCHAR(255)</span>;
+
+    <span class="comment">-- Control de Errores</span>
+    <span class="keyword">DECLARE</span> EXIT HANDLER <span class="keyword">FOR SQLEXCEPTION</span>
+    <span class="keyword">BEGIN</span>
+        <span class="keyword">ROLLBACK</span>;      
+        <span class="keyword">SET</span> v_error_msg = <span class="string">'Error crítico: No se pudo procesar la transacción.'</span>;
+        <span class="keyword">SELECT</span> v_error_msg AS mensaje_error;
+    <span class="keyword">END</span>;
+
+    <span class="comment">-- Inicio de Transacción</span>
+    <span class="keyword">START TRANSACTION</span>; 
+    <span class="comment">-- Lógica del Procedimiento</span>
+    <span class="keyword">UPDATE</span> cuentas_bancarias
+    <span class="keyword">SET</span> saldo = saldo + p_saldo
+    <span class="keyword">WHERE</span> cliente_id = p_usuario;
+
+    <span class="comment">-- Valida que realmente se actualizo una cuenta</span>
+    <span class="keyword">SET</span> v_filas_afectadas = <span class="keyword">ROW_COUNT</span>();
+
+    <span class="keyword">IF</span> v_filas_afectadas = 0 <span class="keyword">THEN</span>
+        <span class="keyword">ROLLBACK</span>;
+        <span class="keyword">SET</span> v_error_msg = <span class="string">'Error: Usuario no encontrado.'</span>;
+        <span class="keyword">SELECT</span> v_error_msg AS mensaje_error;
+    <span class="keyword">ELSE</span>
+        <span class="comment">-- Confirmar Cambios</span>
+        <span class="keyword">COMMIT</span>;
+        <span class="keyword">SET</span> v_error_msg = <span class="string">'Éxito: Saldo actualizado correctamente.'</span>;
+        <span class="keyword">SELECT</span> v_error_msg AS mensaje_exito;
+    <span class="keyword">END IF</span>;
+
+<span class="keyword">END</span>$$
+
+<span class="keyword">DELIMITER</span> ;</code></pre>
+                </div>
+            </section>
+
+            <br>
+
+            <section id="seguridad">
+                <h2>Seguridad: Código Defensivo y Prevención</h2>
+
+                <p class="lead-text">
+                    El código debe ser <strong>defensivo y resiliente</strong> ante fallos. Este es el error más grave:
+                    mira la diferencia entre código vulnerable y código seguro.
+                </p>
+
+                <div class="comparison">
+                    <div class="comp-box bad">
+                        <span class="badge b-bad">Vulnerable (Peligro)</span>
+                        <p>Concatenar texto directamente permite que el usuario altere la consulta.</p>
+                        <div class="code-wrapper" style="border:none; padding:10px; margin:0;">
+                            <pre><code><span class="keyword">SET</span> @sql = CONCAT(
+  <span class="string">'SELECT * FROM usuarios_secretos WHERE usuario = "'</span>, 
+  p_usuario, 
+  <span class="string">'"'</span>
+);
+<span class="comment">-- Si p_usuario es 'admin" OR "1"="1'', puede ver todos los usuarios.</span>
+<span class="keyword">PREPARE</span> stmt <span class="keyword">FROM</span> @sql;
+<span class="keyword">EXECUTE</span> stmt;</code></pre>
+                        </div>
+                    </div>
+                    <div class="comp-box good">
+                        <span class="badge b-good">Seguro</span>
+                        <p>Usar signos de interrogación separa los datos del código.</p>
+                        <div class="code-wrapper" style="border:none; padding:10px; margin:0;">
+                            <pre><code><span class="keyword">SET</span> @sql = <span class="string">'SELECT * FROM usuarios_secretos WHERE usuario = ?'</span>;
+
+<span class="keyword">PREPARE</span> stmt <span class="keyword">FROM</span> @sql;
+<span class="comment">-- El dato viaja separado, imposible inyectar código.</span>
+<span class="keyword">EXECUTE</span> stmt <span class="keyword">USING</span> p_usuario;</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prevention-box">
+                    <h3>🛡️ Principios de Seguridad (Prevención)</h3>
+                    <ul class="security-list">
+                        <li>
+                            <strong>Validación de Entradas:</strong>
+                            Nunca confiar en los parámetros. Validar nulos, rangos y tipos de datos al inicio del
+                            procedimiento.
+                        </li>
+                        <li>
+                            <strong>SQL Dinámico:</strong>
+                            Usar <code>PREPARE</code> y <code>EXECUTE</code> con extrema precaución. Siempre usar
+                            marcadores (<code>?</code>) para evitar SQL Injection.
+                        </li>
+                        <li>
+                            <strong>Permisos:</strong>
+                            Evitar dar <code>GRANT ALL</code>. El procedimiento debe tener solo los permisos necesarios
+                            (Principio de menor privilegio).
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="errores">
+                <h2>Gestión de Errores y Resiliencia</h2>
+                <p class="lead-text">
+                    Un sistema resiliente no solo evita fallos, sino que sabe <strong>recuperarse</strong> de ellos sin
+                    perder datos.
+                </p>
+
+                <div class="prevention-box" style="margin-top: 0; margin-bottom: 25px;">
+                    <h3>Pilares de la Estabilidad</h3>
+                    <ul class="security-list">
+                        <li>
+                            <strong>Transaccionalidad (ACID):</strong>
+                            Usar <code>START TRANSACTION</code>, <code>COMMIT</code> y <code>ROLLBACK</code> asegura la
+                            integridad. Si falla un paso intermedio, nada se guarda.
+                        </li>
+                        <li>
+                            <strong>Manejo de Excepciones (Handlers):</strong>
+                            Implementar <code>DECLARE ... HANDLER FOR SQLEXCEPTION</code> permite capturar el error
+                            limpiamente en lugar de que el programa colapse.
+                        </li>
+                        <li>
+                            <strong>Bloqueo de Filas (Row Locking):</strong>
+                            Usar <code>FOR UPDATE</code> al leer saldos evita condiciones de carrera si dos
+                            transacciones ocurren al mismo tiempo.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="comp-box good" style="width: 100%; max-width: none;">
+                    <span class="badge b-good">Ejemplo de Implementación Completa</span>
+                    <p>Este procedimiento realiza una transferencia atómica. Bloquea la fila del emisor para evitar
+                        concurrencia, valida saldos, actualiza ambas cuentas y genera un log histórico.</p>
+
+                    <div class="code-wrapper" style="border:none; padding:15px; margin:0;">
+                        <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        <pre><code><span class="keyword">DELIMITER</span> $$
+                        <pre><code><span class="keyword">CREATE PROCEDURE</span> sp_transferencia_segura(
+    <span class="keyword">IN</span> p_emisor <span class="keyword">INT</span>, 
+    <span class="keyword">IN</span> p_receptor <span class="keyword">INT</span>,
+    <span class="keyword">IN</span> p_monto <span class="keyword">DECIMAL</span>(10,2)
+)
+<span class="keyword">BEGIN</span>
+    <span class="comment">-- Declarar variables</span>
+    <span class="keyword">DECLARE</span> code <span class="keyword">CHAR</span>(5) <span class="keyword">DEFAULT</span> <span class="string">'00000'</span>;
+    <span class="keyword">DECLARE</span> msg <span class="keyword">TEXT</span>;
+    <span class="keyword">DECLARE</span> saldo_actual <span class="keyword">DECIMAL</span>(10,2);
+
+    <span class="comment">-- Si ocurre CUALQUIER error SQL</span>
+    <span class="keyword">DECLARE EXIT HANDLER FOR SQLEXCEPTION</span>
+    <span class="keyword">BEGIN</span>
+        <span class="comment">-- a) Revertir cambios pendientes</span>
+        <span class="keyword">ROLLBACK</span>;
+        
+        <span class="comment">-- b) Obtener detalles del error</span>
+        <span class="keyword">GET DIAGNOSTICS CONDITION</span> 1
+            code = RETURNED_SQLSTATE, msg = MESSAGE_TEXT;
+            
+        <span class="comment">-- c) Guardar en Bitácora de Errores</span>
+        <span class="keyword">INSERT INTO</span> error_logs (error_code, error_msg, user_evt, created_at)
+        <span class="keyword">VALUES</span> (code, msg, <span class="keyword">USER</span>(), <span class="keyword">NOW</span>());
+        
+        <span class="keyword">SELECT</span> <span class="string">'Error procesado: Transacción revertida.'</span> <span class="keyword">AS</span> Status;
+    <span class="keyword">END</span>;
+
+    <span class="comment">-- Inicio de la Transacción</span>
+    <span class="keyword">START TRANSACTION</span>;
+
+    <span class="comment">-- Validar y BLOQUEAR saldo</span>
+    <span class="keyword">SELECT</span> saldo <span class="keyword">INTO</span> saldo_actual <span class="keyword">FROM</span> cuentas 
+    <span class="keyword">WHERE</span> id = p_emisor <span class="keyword">FOR UPDATE</span>;
+    
+    <span class="keyword">IF</span> saldo_actual < p_monto <span class="keyword">OR</span> saldo_actual <span class="keyword">IS NULL THEN</span>
+        <span class="keyword">SIGNAL SQLSTATE</span> <span class="string">'45000'</span> <span class="keyword">SET</span> MESSAGE_TEXT = <span class="string">'Saldo Insuficiente o cuenta inválida'</span>;
+    <span class="keyword">END IF</span>;
+
+    <span class="comment">-- Restar al Emisor</span>
+    <span class="keyword">UPDATE</span> cuentas <span class="keyword">SET</span> saldo = saldo - p_monto <span class="keyword">WHERE</span> id = p_emisor;
+
+    <span class="comment">-- Sumar al Receptor</span>
+    <span class="keyword">UPDATE</span> cuentas <span class="keyword">SET</span> saldo = saldo + p_monto <span class="keyword">WHERE</span> id = p_receptor;
+
+    <span class="comment">-- Registrar la transacción (INSERT histórico, no UPDATE masivo)</span>
+    <span class="keyword">INSERT INTO</span> log_transacciones (emisor_id, receptor_id, monto, status, fecha)
+    <span class="keyword">VALUES</span> (p_emisor, p_receptor, p_monto, <span class="string">'OK'</span>, <span class="keyword">NOW</span>());
+
+    <span class="comment">-- Confirmar cambios</span>
+    <span class="keyword">COMMIT</span>;
+    
+<span class="keyword">END</span>$$
+
+<span class="keyword">DELIMITER</span> ;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="triggers">
+                <h2>Buenas Prácticas en Triggers</h2>
+                <p class="lead-text">Un trigger mal hecho puede detener toda la base de datos. Úsalo principalmente para auditoría
+                    automática.</p>
+
+                <h3>Ejemplo: Bitácora de Cambios (Audit Log)</h3>
+                <p class="lead-text">Este trigger guarda automáticamente el valor anterior antes de una actualización.</p>
+
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                    <pre><code><span class="keyword">DELIMITER</span> //
+                    <pre><code><span class="keyword">CREATE TRIGGER</span> tr_productos_before_update
+<span class="keyword">BEFORE UPDATE ON</span> productos
+<span class="keyword">FOR EACH ROW</span>
+<span class="keyword">BEGIN</span>
+    <span class="comment">-- Si el precio cambia, guardamos el historial</span>
+    <span class="keyword">IF</span> OLD.precio &lt;&gt; NEW.precio <span class="keyword">THEN</span>
+        <span class="keyword">INSERT INTO</span> historial_precios (prod_id, precio_ant, fecha)
+        <span class="keyword">VALUES</span> (OLD.id, OLD.precio, NOW());
+    <span class="keyword">END IF</span>;
+
+    <span class="keyword">END</span> //
+
+<span class="keyword">DELIMITER</span> ;
+                </div>
+
+                <p class="lead-text" style="margin-top: 30px;">
+                    Los triggers son herramientas <strong>poderosas</strong>, pero peligrosas si se abusan.
+                </p>
+
+                <div class="prevention-box">
+                    <h3>Precauciones y Optimización</h3>
+
+                    <p class="lead-text"style="margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 15px;">
+                        <strong style="color: #fca311;">Regla de Oro:</strong>
+                        Mantener la lógica del trigger <strong>simple y rápida</strong>. Recuerda que un trigger lento
+                        ralentiza todas las operaciones de inserción o actualización de la tabla principal.
+                    </p>
+
+                    <ul class="security-list">
+                        <li>
+                            <strong>Eventos Separados:</strong>
+                            No intentes crear un "super trigger" que maneje todo. Crea triggers separados para
+                            <code>INSERT</code>, <code>UPDATE</code> y <code>DELETE</code> para facilitar el
+                            mantenimiento.
+                        </li>
+                        <li>
+                            <strong>Evitar Complejidad:</strong>
+                            No llames a procedimientos almacenados complejos desde un trigger a menos que sea
+                            estrictamente indispensable. El trigger debe ser ligero.
+                        </li>
+                        <li>
+                            <strong>Cuidado con la Recursividad:</strong>
+                            Nunca hagas un <code>UPDATE</code> a la misma tabla que disparó el trigger dentro del
+                            trigger. Esto crea bucles infinitos que pueden colgar el servidor.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="ejemplos">
+
+                <h2>Ejemplos Comentados: Integración Completa</h2>
+                <p class="lead-text">
+                    A continuación, veremos cómo aplicar todas las reglas anteriores en código real y funcional.
+                </p>
+
+                <div class="comp-box good" style="width: 100%; max-width: none; margin-bottom: 30px;">
+                    <span class="badge b-good">Transacción Segura</span>
+                    <h3>A. Procedimiento Almacenado (Inserción con Validación)</h3>
+                    <p>Este ejemplo combina <strong>validación de negocio</strong>, <strong>transacciones
+                            (ACID)</strong> y <strong>manejo de errores</strong> en un solo bloque.</p>
+
+                    <div class="code-wrapper" style="border:none; padding:15px; margin:0;">
+                        <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        <pre><code><span class="keyword">DELIMITER</span> //
+
+<span class="keyword">CREATE PROCEDURE</span> sp_insertar_pago (
+    <span class="keyword">IN</span> p_id_alumno <span class="keyword">INT</span>,
+    <span class="keyword">IN</span> p_monto <span class="keyword">DECIMAL</span>(10,2)
+)
+<span class="keyword">BEGIN</span>
+    <span class="comment">-- Declaración de variables</span>
+    <span class="keyword">DECLARE</span> v_saldo_pendiente <span class="keyword">DECIMAL</span>(10,2);
+    
+    <span class="comment">-- Manejo de errores: Si algo falla, revertimos todo</span>
+    <span class="keyword">DECLARE EXIT HANDLER FOR SQLEXCEPTION</span>
+    <span class="keyword">BEGIN</span>
+        <span class="keyword">ROLLBACK</span>;
+        <span class="keyword">SELECT</span> <span class="string">'Error: Transacción fallida'</span> <span class="keyword">AS</span> mensaje;
+    <span class="keyword">END</span>;
+
+    <span class="keyword">START TRANSACTION</span>;
+
+    <span class="comment">-- 1. Validación de negocio</span>
+    <span class="keyword">SELECT</span> saldo <span class="keyword">INTO</span> v_saldo_pendiente <span class="keyword">FROM</span> alumnos <span class="keyword">WHERE</span> id = p_id_alumno;
+    
+    <span class="keyword">IF</span> v_saldo_pendiente <span class="keyword">IS NULL THEN</span>
+        <span class="keyword">SIGNAL SQLSTATE</span> <span class="string">'45000'</span> <span class="keyword">SET</span> MESSAGE_TEXT = <span class="string">'El alumno no existe'</span>;
+    <span class="keyword">ELSEIF</span> p_monto <= 0 <span class="keyword">THEN</span>
+        <span class="keyword">SIGNAL SQLSTATE</span> <span class="string">'45000'</span> <span class="keyword">SET</span> MESSAGE_TEXT = <span class="string">'El monto debe ser positivo'</span>;
+    <span class="keyword">END IF</span>;
+
+    <span class="comment">-- 2. Inserción</span>
+    <span class="keyword">INSERT INTO</span> pagos (id_alumno, monto, fecha) <span class="keyword">VALUES</span> (p_id_alumno, p_monto, <span class="keyword">NOW</span>());
+
+    <span class="comment">-- 3. Lógica derivada (Actualizar saldo)</span>
+    <span class="keyword">UPDATE</span> alumnos <span class="keyword">SET</span> saldo = saldo - p_monto <span class="keyword">WHERE</span> id = p_id_alumno;
+
+    <span class="keyword">COMMIT</span>;
+
+<span class="keyword">END</span> //
+
+<span class="keyword">DELIMITER</span> ;</code></pre>
+                    </div>
+                </div>
+
+                <div class="comp-box good" style="width: 100%; max-width: none;">
+                    <span class="badge b-good">Auditoría (Log)</span>
+                    <h3>B. Trigger de Auditoría</h3>
+                    <p>Este trigger verifica si hubo un cambio real y guarda quién, cuándo y qué cambió.</p>
+
+                    <div class="code-wrapper" style="border:none; padding:15px; margin:0;">
+                        <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        <pre><code><span class="keyword">DELIMITER</span> //
+
+<span class="keyword">CREATE TRIGGER</span> tr_update_pagos_after
+<span class="keyword">AFTER UPDATE ON</span> pagos
+<span class="keyword">FOR EACH ROW</span>
+<span class="keyword">BEGIN</span>
+    <span class="comment">-- Solo registramos si hubo un cambio real en el monto</span>
+    <span class="keyword">IF</span> OLD.monto <> NEW.monto <span class="keyword">THEN</span>
+        <span class="keyword">INSERT INTO</span> bitacora_log 
+            (tabla, accion, id_registro, valor_anterior, valor_nuevo, usuario, fecha)
+        <span class="keyword">VALUES</span> 
+            (<span class="string">'pagos'</span>, <span class="string">'UPDATE'</span>, OLD.id, OLD.monto, NEW.monto, <span class="keyword">CURRENT_USER</span>(), <span class="keyword">NOW</span>());
+    <span class="keyword">END IF</span>;
+
+<span class="keyword">END</span> //
+
+<span class="keyword">DELIMITER</span> ;</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="laboratorio">
+                <div class="lab-wrapper">
+                    <h2 style="border:none; padding:0; margin-bottom:0.5rem; color:var(--accent)">★ Laboratorio de
+                        Estructura SQL</h2>
+                    <p>Arrastra los bloques. <strong>Responde correctamente la pregunta</strong> para desbloquear la
+                        pieza.</p>
+
+                    <div class="lab-grid">
+                        <div>
+                            <div class="col-header">Piezas (Clic para añadir)</div>
+                            <div id="palette">
+                                <div class="scratch-block blk-struc" onclick="prepareBlock('del_in')">DELIMITER $$</div>
+                                <div class="scratch-block blk-struc" onclick="prepareBlock('create')">CREATE PROCEDURE
+                                </div>
+                                <div class="scratch-block blk-struc" onclick="prepareBlock('begin')">BEGIN</div>
+                                <div class="scratch-block blk-var" onclick="prepareBlock('vars')">DECLARE VARIABLES
+                                </div>
+                                <div class="scratch-block blk-error" onclick="prepareBlock('handler')">HANDLER ERROR
+                                </div>
+                                <div class="scratch-block blk-logic" onclick="prepareBlock('trans')">START TRANSACTION
+                                </div>
+                                <div class="scratch-block blk-logic" onclick="prepareBlock('logic')">-- TU LÓGICA SQL --
+                                </div>
+                                <div class="scratch-block blk-logic" onclick="prepareBlock('commit')">COMMIT</div>
+                                <div class="scratch-block blk-struc" onclick="prepareBlock('end')">END$$</div>
+                                <div class="scratch-block blk-struc" onclick="prepareBlock('del_out')">DELIMITER ;</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="col-header">Tu Ensamble Visual</div>
+                            <div class="editor-area" id="editor">
+                                <div class="placeholder">Empieza aquí...</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="col-header">Código Generado (Live)</div>
+                            <div class="live-code-window" id="liveCode">-- El código aparecerá aquí...</div>
+                        </div>
+                    </div>
+
+                    <div class="lab-controls">
+                        <button class="btn-run" onclick="validateCode()">▶ Compilar y Validar</button>
+                        <button class="btn-reset" onclick="resetLab()">Reiniciar</button>
+                        <div class="console" id="console">> Esperando estructura...</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="quizModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="quizQuestion">Pregunta</h3>
+            <div id="quizOptions"></div>
+            <button class="btn-cancel" onclick="closeQuiz()">Cancelar</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var palette = document.getElementById('palette');
+            for (var i = palette.children.length; i >= 0; i--) {
+                palette.appendChild(palette.children[Math.random() * i | 0]);
+            }
+        });
+    </script>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
