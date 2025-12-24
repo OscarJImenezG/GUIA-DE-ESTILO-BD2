@@ -32,12 +32,12 @@
 
         <main>
             <header>
-                <h1>Estándares profesionales para Procedimientos y Triggers</h1>
+                <h1>Estándares profesionales para Procedimientos Almacenados y Triggers</h1>
             </header>
 
             <section id="objetivo">
                 <h2>Objetivo</h2>
-                <p>Escribir código que no solo funcione, sino que sea profesional. Un buen SP debe ser:</p>
+                <p>Escribir código que no solo funcione, sino que sea profesional. Un buen procedimiento almacenado debe ser:</p>
                 <ul>
                     <li><strong>Legible:</strong> Uso correcto de indentación y nombres.</li>
                     <li><strong>Robusto:</strong> Manejo de errores <code>SQLEXCEPTION</code>.</li>
@@ -48,11 +48,10 @@
             <section id="material">
                 <h2>Material de Práctica</h2>
                 <p>Para seguir este taller, hemos preparado un esquema de base de datos. Contiene las tablas
-                    necesarias (<code>alumnos</code>, <code>pagos</code>, <code>productos</code>, etc.) pero
-                    <strong>sin los procedimientos ni triggers</strong>.
+                    necesarias (<code>alumnos</code>, <code>pagos</code>, <code>productos</code>, etc.) para 
+                    que puedas visualizar el comportamiento y control de los ejemplos expuestos en esta guía.
                 </p>
-                <p>Descarga el archivo, impórtalo en tu gestor (Workbench/DBeaver) y luego copia/pega los códigos de
-                    ejemplos para practicar.</p>
+                <p>Descarga el archivo, impórtalo en tu gestor (Workbench/DBeaver) y práctica.</p>
 
                 <div class="download-box"
                     style="text-align: center; padding: 20px; background: #222; border-radius: 8px; margin-top: 20px;">
@@ -232,7 +231,7 @@
                 </div>
 
                 <div class="prevention-box">
-                    <h3>🛡️ Principios de Seguridad (Prevención)</h3>
+                    <h3>Principios de Seguridad Preventiva</h3>
                     <ul class="security-list">
                         <li>
                             <strong>Validación de Entradas:</strong>
@@ -496,13 +495,13 @@
             <section id="laboratorio">
                 <div class="lab-wrapper">
                     <h2 style="border:none; padding:0; margin-bottom:0.5rem; color:var(--accent)">★ Laboratorio de
-                        Estructura SQL</h2>
-                    <p>Arrastra los bloques. <strong>Responde correctamente la pregunta</strong> para desbloquear la
-                        pieza.</p>
+                        Estructura y Estilo SQL</h2>
+                    <p>Da clic en el bloque para añadirlo. <strong>Responde correctamente la pregunta</strong> para desbloquear el
+                        bloque. Si necesitas mover un bloque puedes arrastrarlo a una nueva posición.</p>
 
                     <div class="lab-grid">
                         <div>
-                            <div class="col-header">Piezas (Clic para añadir)</div>
+                            <div class="col-header">Bloques (Clic para añadir)</div>
                             <div id="palette">
                                 <div class="scratch-block blk-struc" onclick="prepareBlock('del_in')">DELIMITER $$</div>
                                 <div class="scratch-block blk-struc" onclick="prepareBlock('create')">CREATE PROCEDURE
@@ -523,14 +522,14 @@
                         </div>
 
                         <div>
-                            <div class="col-header">Tu Ensamble Visual</div>
+                            <div class="col-header">Estructura</div>
                             <div class="editor-area" id="editor">
-                                <div class="placeholder">Empieza aquí...</div>
+                                <div class="placeholder">Aquí aparecerán los bloques desbloqueados...</div>
                             </div>
                         </div>
 
                         <div>
-                            <div class="col-header">Código Generado (Live)</div>
+                            <div class="col-header">Código Generado</div>
                             <div class="live-code-window" id="liveCode">-- El código aparecerá aquí...</div>
                         </div>
                     </div>
