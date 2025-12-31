@@ -820,3 +820,32 @@ WHERE id = 1;
     link.click();
     document.body.removeChild(link);
 }
+
+// LÓGICA DE CONTROL DEL MENÚ
+const menuToggle = document.getElementById('menuToggle');
+const sidebar = document.getElementById('sidebar');
+const container = document.querySelector('.container');
+
+menuToggle.addEventListener('click', () => {
+    if (window.innerWidth > 850) {
+        // Modo PC
+        container.classList.toggle('collapsed');
+        // Cambiamos el texto según el estado
+        menuToggle.innerHTML = container.classList.contains('collapsed') ? 'Menú' : 'Cerrar Menú';
+    } else {
+        // Modo Móvil
+        sidebar.classList.toggle('active');
+        // Cambiamos el texto según el estado
+        menuToggle.innerHTML = sidebar.classList.contains('active') ? 'Cerrar Menú' : 'Menú';
+    }
+});
+
+// Cerrar al hacer clic en enlaces y restaurar palabra "Menú"
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 850) {
+            sidebar.classList.remove('active');
+            menuToggle.innerHTML = 'Menú';
+        }
+    });
+});

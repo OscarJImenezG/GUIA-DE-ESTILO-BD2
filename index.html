@@ -10,8 +10,10 @@
 
 <body>
 
+    <button class="menu-toggle" id="menuToggle">Cerrar Menú</button>
+
     <div class="container">
-        <aside>
+        <aside id="sidebar">
             <h2>BD II Procedimientos Almacenados y Triggers</h2>
             <div class="nav-header">Teoría</div>
             <ul class="nav-links">
@@ -37,7 +39,8 @@
 
             <section id="objetivo">
                 <h2>Objetivo</h2>
-                <p>Escribir código que no solo funcione, sino que sea profesional. Un buen procedimiento almacenado debe ser:</p>
+                <p>Escribir código que no solo funcione, sino que sea profesional. Un buen procedimiento almacenado debe
+                    ser:</p>
                 <ul>
                     <li><strong>Legible:</strong> Uso correcto de indentación y nombres.</li>
                     <li><strong>Robusto:</strong> Manejo de errores <code>SQLEXCEPTION</code>.</li>
@@ -48,7 +51,7 @@
             <section id="material">
                 <h2>Material de Práctica</h2>
                 <p>Para seguir este taller, hemos preparado un esquema de base de datos. Contiene las tablas
-                    necesarias (<code>alumnos</code>, <code>pagos</code>, <code>productos</code>, etc.) para 
+                    necesarias (<code>alumnos</code>, <code>pagos</code>, <code>productos</code>, etc.) para
                     que puedas visualizar el comportamiento y control de los ejemplos expuestos en esta guía.
                 </p>
                 <p>Descarga el archivo, impórtalo en tu gestor (Workbench/DBeaver) y práctica.</p>
@@ -349,11 +352,13 @@
 
             <section id="triggers">
                 <h2>Buenas Prácticas en Triggers</h2>
-                <p class="lead-text">Un trigger mal hecho puede detener toda la base de datos. Úsalo principalmente para auditoría
+                <p class="lead-text">Un trigger mal hecho puede detener toda la base de datos. Úsalo principalmente para
+                    auditoría
                     automática.</p>
 
                 <h3>Ejemplo: Bitácora de Cambios (Audit Log)</h3>
-                <p class="lead-text">Este trigger guarda automáticamente el valor anterior antes de una actualización.</p>
+                <p class="lead-text">Este trigger guarda automáticamente el valor anterior antes de una actualización.
+                </p>
 
                 <div class="code-wrapper">
                     <button class="copy-btn" onclick="copyText(this)">Copiar</button>
@@ -461,17 +466,17 @@
 <span class="keyword">END</span> //
 
 <span class="keyword">DELIMITER</span> ;</code></pre>
-                    </div>
                 </div>
+    </div>
 
-                <div class="comp-box good" style="width: 100%; max-width: none;">
-                    <span class="badge b-good">Auditoría (Log)</span>
-                    <h3>B. Trigger de Auditoría</h3>
-                    <p>Este trigger verifica si hubo un cambio real y guarda quién, cuándo y qué cambió.</p>
+    <div class="comp-box good" style="width: 100%; max-width: none;">
+        <span class="badge b-good">Auditoría (Log)</span>
+        <h3>B. Trigger de Auditoría</h3>
+        <p>Este trigger verifica si hubo un cambio real y guarda quién, cuándo y qué cambió.</p>
 
-                    <div class="code-wrapper" style="border:none; padding:15px; margin:0;">
-                        <button class="copy-btn" onclick="copyText(this)">Copiar</button>
-                        <pre><code><span class="keyword">DELIMITER</span> //
+        <div class="code-wrapper" style="border:none; padding:15px; margin:0;">
+            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+            <pre><code><span class="keyword">DELIMITER</span> //
 
 <span class="keyword">CREATE TRIGGER</span> tr_update_pagos_after
 <span class="keyword">AFTER UPDATE ON</span> pagos
@@ -488,61 +493,62 @@
 <span class="keyword">END</span> //
 
 <span class="keyword">DELIMITER</span> ;</code></pre>
+        </div>
+    </div>
+    </section>
+
+    <section id="laboratorio">
+        <div class="lab-wrapper">
+            <h2 style="border:none; padding:0; margin-bottom:0.5rem; color:var(--accent)">★ Laboratorio de
+                Estructura y Estilo SQL</h2>
+            <p>Da clic en el bloque para añadirlo. <strong>Responde correctamente la pregunta</strong> para desbloquear
+                el
+                bloque. Si necesitas mover un bloque puedes arrastrarlo a una nueva posición.</p>
+
+            <div class="lab-grid">
+                <div>
+                    <div class="col-header">Bloques (Clic para añadir)</div>
+                    <div id="palette">
+                        <div class="scratch-block blk-struc" onclick="prepareBlock('del_in')">DELIMITER $$</div>
+                        <div class="scratch-block blk-struc" onclick="prepareBlock('create')">CREATE PROCEDURE
+                        </div>
+                        <div class="scratch-block blk-struc" onclick="prepareBlock('begin')">BEGIN</div>
+                        <div class="scratch-block blk-var" onclick="prepareBlock('vars')">DECLARE VARIABLES
+                        </div>
+                        <div class="scratch-block blk-error" onclick="prepareBlock('handler')">HANDLER ERROR
+                        </div>
+                        <div class="scratch-block blk-logic" onclick="prepareBlock('trans')">START TRANSACTION
+                        </div>
+                        <div class="scratch-block blk-logic" onclick="prepareBlock('logic')">-- TU LÓGICA SQL --
+                        </div>
+                        <div class="scratch-block blk-logic" onclick="prepareBlock('commit')">COMMIT</div>
+                        <div class="scratch-block blk-struc" onclick="prepareBlock('end')">END$$</div>
+                        <div class="scratch-block blk-struc" onclick="prepareBlock('del_out')">DELIMITER ;</div>
                     </div>
                 </div>
-            </section>
 
-            <section id="laboratorio">
-                <div class="lab-wrapper">
-                    <h2 style="border:none; padding:0; margin-bottom:0.5rem; color:var(--accent)">★ Laboratorio de
-                        Estructura y Estilo SQL</h2>
-                    <p>Da clic en el bloque para añadirlo. <strong>Responde correctamente la pregunta</strong> para desbloquear el
-                        bloque. Si necesitas mover un bloque puedes arrastrarlo a una nueva posición.</p>
-
-                    <div class="lab-grid">
-                        <div>
-                            <div class="col-header">Bloques (Clic para añadir)</div>
-                            <div id="palette">
-                                <div class="scratch-block blk-struc" onclick="prepareBlock('del_in')">DELIMITER $$</div>
-                                <div class="scratch-block blk-struc" onclick="prepareBlock('create')">CREATE PROCEDURE
-                                </div>
-                                <div class="scratch-block blk-struc" onclick="prepareBlock('begin')">BEGIN</div>
-                                <div class="scratch-block blk-var" onclick="prepareBlock('vars')">DECLARE VARIABLES
-                                </div>
-                                <div class="scratch-block blk-error" onclick="prepareBlock('handler')">HANDLER ERROR
-                                </div>
-                                <div class="scratch-block blk-logic" onclick="prepareBlock('trans')">START TRANSACTION
-                                </div>
-                                <div class="scratch-block blk-logic" onclick="prepareBlock('logic')">-- TU LÓGICA SQL --
-                                </div>
-                                <div class="scratch-block blk-logic" onclick="prepareBlock('commit')">COMMIT</div>
-                                <div class="scratch-block blk-struc" onclick="prepareBlock('end')">END$$</div>
-                                <div class="scratch-block blk-struc" onclick="prepareBlock('del_out')">DELIMITER ;</div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="col-header">Estructura</div>
-                            <div class="editor-area" id="editor">
-                                <div class="placeholder">Aquí aparecerán los bloques desbloqueados...</div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="col-header">Código Generado</div>
-                            <div class="live-code-window" id="liveCode">-- El código aparecerá aquí...</div>
-                        </div>
-                    </div>
-
-                    <div class="lab-controls">
-                        <button class="btn-run" onclick="validateCode()">▶ Compilar y Validar</button>
-                        <button class="btn-reset" onclick="resetLab()">Reiniciar</button>
-                        <div class="console" id="console">> Esperando estructura...</div>
+                <div>
+                    <div class="col-header">Estructura</div>
+                    <div class="editor-area" id="editor">
+                        <div class="placeholder">Aquí aparecerán los bloques desbloqueados...</div>
                     </div>
                 </div>
-            </section>
 
-        </main>
+                <div>
+                    <div class="col-header">Código Generado</div>
+                    <div class="live-code-window" id="liveCode">-- El código aparecerá aquí...</div>
+                </div>
+            </div>
+
+            <div class="lab-controls">
+                <button class="btn-run" onclick="validateCode()">▶ Compilar y Validar</button>
+                <button class="btn-reset" onclick="resetLab()">Reiniciar</button>
+                <div class="console" id="console">> Esperando estructura...</div>
+            </div>
+        </div>
+    </section>
+
+    </main>
     </div>
 
     <div id="quizModal" class="modal-overlay">
@@ -550,7 +556,8 @@
             <h3 id="quizQuestion">Pregunta</h3>
             <div id="quizOptions"></div>
             <button class="btn-cancel" onclick="closeQuiz()">Cancelar</button>
-        </div>
+    </div>
+
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
